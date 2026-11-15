@@ -1,0 +1,49 @@
+import torch
+import step1_tokens
+import torch.nn.functional as F
+
+tokens = step1_tokens
+
+class BigramLanguageModel(torch.nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = torch.nn.Embedding(vocab_size, vocab_size)
+
+    def forward(self, idx):
+        logits = self.token_embedding_table(idx)
+        return logits
+
+model = BigramLanguageModel(tokens.vocab_size)
+model.load_state_dict(torch.load("../checkpoints/felixgpt_checkpoint_100k.pth"))
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
+xb, yb = tokens.get_batch("train")
+
+logits = model(xb)
+print("Input shape:", xb.shape)
+print("Logits shape:", logits.shape)
+
+for iterations in range(50000):
+    optimizer.zero_grad()
+    xb, yb = tokens.get_batch("train")
+    logits = model(xb)
+    B, T, V, = logits.shape
+    logits_flat = logits.view(B * T, V)
+    targets_flat = yb.view(B * T)
+    loss = F.cross_entropy(logits_flat, targets_flat)
+    loss.backward()
+    optimizer.step()
+    if iterations % 5000 == 0:
+        print(f"Iteration {iterations}: Loss = {loss.item()}")
+
+
+torch.save(model.state_dict(), "../checkpoints/felixgpt_checkpoint_150k.pth")
+print("FelixGPT checkpoint saved!")
+
+model.eval()
+h = torch.tensor([[tokens.stoi["h"]]], dtype=torch.long)
+with torch.no_grad():
+    logits = model(h)
+    next_token_id = logits[0, -1].argmax(dim=-1).item()
+
+next_character = tokens.decode([next_token_id])
+print(f"Most likely character after 'h': {next_character!r}")

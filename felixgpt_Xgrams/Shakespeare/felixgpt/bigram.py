@@ -1,0 +1,73 @@
+import torch
+import step1_tokens
+import torch.nn.functional as F
+
+tokens = step1_tokens
+
+temperature = 1.2
+
+class BigramLanguageModel(torch.nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = torch.nn.Embedding(vocab_size, vocab_size)
+
+    def forward(self, idx):
+        logits = self.token_embedding_table(idx)
+        return logits
+
+model = BigramLanguageModel(tokens.vocab_size)
+model.load_state_dict(torch.load("../checkpoints/felixgpt_checkpoint_100k.pth"))
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
+xb, yb = tokens.get_batch("train")
+
+logits = model(xb)
+print("Input shape:", xb.shape)
+print("Logits shape:", logits.shape)
+
+"""
+for iterations in range(200000):
+    optimizer.zero_grad()
+    xb, yb = tokens.get_batch("train")
+    logits = model(xb)
+    B, T, V, = logits.shape
+    logits_flat = logits.view(B * T, V)
+    targets_flat = yb.view(B * T)
+    loss = F.cross_entropy(logits_flat, targets_flat)
+    loss.backward()
+    optimizer.step()
+    if iterations % 5000 == 0:
+        print(f"Iteration {iterations}: Loss = {loss.item()}")
+
+torch.save(model.state_dict(), "../checkpoints/felixgpt_checkpoint_200k.pth")
+print("FelixGPT checkpoint saved!")
+"""
+
+model.eval()
+
+def predictTop5(input_id):
+
+    with torch.no_grad():
+        letter = torch.tensor([[input_id]], dtype=torch.long)
+        p = F.softmax(model(letter), dim=-1)
+        top = torch.topk(p, k=5, dim=-1)
+        top_ids = top.indices
+        top_probs = top.values
+
+        top5 = torch.squeeze(top_ids).tolist()
+        top5_IDS = [tokens.itos[i] for i in top5]
+        top5_probs = torch.squeeze(top_probs).tolist()
+        top5_probs = [prob * 100 for prob in top5_probs]
+
+        print(f"Top 5 predictions for '{input_id}':", top5_IDS, ", ", top5_probs)
+
+
+def predict(input_id):
+    char = torch.tensor([[input_id]], dtype=torch.long)
+
+    with torch.no_grad():
+        logits = model(char)
+        probs = F.softmax(logits / temperature, dim=-1)
+        next_token_id = probs[0, -1].multinomial(num_samples=1).item()
+        output_char = tokens.itos[next_token_id]
+        output_id = next_token_id
+        return output_char, output_id

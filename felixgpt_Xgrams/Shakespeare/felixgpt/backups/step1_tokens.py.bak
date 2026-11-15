@@ -1,0 +1,24 @@
+with open("../data/input.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+
+chars = sorted(set(text))
+vocab_size = len(chars)
+print("Unique characters:", vocab_size)
+print(chars)
+
+stoi = {ch: i for i, ch in enumerate(chars)}
+itos = {i: ch for i, ch in enumerate(chars)}
+
+def encode(s):
+    return [stoi[c] for c in s]
+
+def decode(ids):
+    return "".join(itos[i] for i in ids)
+
+print("Characters in dataset:", len(text))
+print(text[:200])
+
+print(encode("hii there"))
+print(decode(encode("hii there")))
+print(encode("A"))
+print(encode("{"))
