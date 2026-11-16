@@ -6,10 +6,10 @@ block_size = 8
 with open("../data/input.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+# pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
 # Original word-level regex (V1–V14)
-# pattern = r"\r\n|\n|\w+(?:['’]\w+)?|[^\w\s]"
+pattern = r"\r\n|\n|\w+(?:['’]\w+)?|[^\w\s]"
 
 words = re.findall(pattern, text)
 
@@ -28,11 +28,29 @@ itos = {i: w for i, w in enumerate(vocab)}
 def encode(s):
     return [stoi[w] for w in s]
 
+"""
 def decode(ids):
     decoded = ""
     for token_id in ids:
         token = itos[int(token_id)]
         decoded += token
+    return decoded
+"""
+# old decoder for V1-14
+def decode(ids):
+    decoded = ""
+    for token_id in ids:
+        token = itos[int(token_id)]
+
+        if token == "\n":
+            decoded += "\n"
+        elif token in [".", ",", "!", "?", ";", ":", "'", ")", "]"]:
+            decoded += token
+        elif token in ["(", "["]:
+            decoded += " " + token
+        else:
+            decoded += " " + token
+
     return decoded
 
 n = int(0.9 * len(words))

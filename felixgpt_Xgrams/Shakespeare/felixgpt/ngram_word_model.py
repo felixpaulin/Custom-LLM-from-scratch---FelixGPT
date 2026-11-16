@@ -10,7 +10,7 @@ temperature = 0.8
 embedding_dim = 64
 batch_size = 32
 
-version = "V2.15"
+version = "V14"
 
 def estimate_loss(model):
     model.eval()
