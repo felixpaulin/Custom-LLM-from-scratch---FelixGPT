@@ -55,6 +55,7 @@ model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.p
 """
 
 optimizer = torch.optim.RMSprop(model.parameters(), lr=0.0001, alpha=0.99, weight_decay=0.01)
+# adamW optimizer: optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=0.01)
 xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
 xb = xb.to(device) 
 yb = yb.to(device)
