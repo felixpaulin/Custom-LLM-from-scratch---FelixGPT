@@ -1,7 +1,7 @@
 import word_tokens as tokens
 import torch.nn.functional as F
 import ngram_word_model as ngram
-import re
+import regex as re
 
 # Original word-level regex (V1–V14)
 # pattern = r"\r\n|\n|\w+(?:['’]\w+)?|[^\w\s]"
