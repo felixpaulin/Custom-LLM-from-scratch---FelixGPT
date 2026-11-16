@@ -4,7 +4,7 @@ import ngram_word_model as ngram
 import re
 
 og_input_words = input("Enter your prompt: ")
-input_words = re.findall(r"\n|\w+(?:['’]\w+)?|[^\w\s]", og_input_words)
+input_words = re.findall(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""", og_input_words)
 input_ids = tokens.encode(input_words)
 
 # Add newline tokens until the context window is full
