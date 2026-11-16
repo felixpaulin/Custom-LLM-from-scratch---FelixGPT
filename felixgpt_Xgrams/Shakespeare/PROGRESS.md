@@ -20,6 +20,20 @@ The model uses PyTorch and DirectML to train on an AMD Radeon RX 7600 XT GPU.
 - Tokenisation: Word-level, including punctuation and newline tokens.
 
 ---
+### Bigram Model
+
+The original experiment that started FelixGPT. A simple character-level bigram model was developed to explore next-character prediction and understand the fundamentals of language modelling.
+
+Although limited in capability, it established the foundation for the later neural N-gram models and subsequent experiments.
+
+You can use and view it verison as the xxxk pth checkpoint file and suing the step1_tokens tokenizer and the bigram model files. Use generate.py to use it, keep in mind, you can only type one character.
+
+### Project Evolution
+
+The project gradually developed from character-level prediction into more advanced word-level neural N-gram models, introducing larger embeddings, hidden layers, dropout, regularisation and alternative tokenisation methods.
+
+Each version represents an experiment in improving language modelling and generation quality.
+---
 
 ## Model Architecture
 
