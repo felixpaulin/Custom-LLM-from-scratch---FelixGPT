@@ -10,7 +10,7 @@ temperature = 0.8
 embedding_dim = 64
 batch_size = 32
 
-version = "V2.16"
+version = "V2.18"
 
 def estimate_loss(model):
     model.eval()
@@ -50,12 +50,13 @@ class NGramLanguageModel(torch.nn.Module):
 model = NGramLanguageModel(tokens.vocab_size, embedding_dim, tokens.block_size).to(device)
 param_count = sum(p.numel() for p in model.parameters())
 print(f"Number of parameters: {param_count}")
-"""
+
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
 
-optimizer = torch.optim.RMSprop(model.parameters(), lr=0.0001, alpha=0.99, weight_decay=0.01)
-# adamW optimizer: optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=0.01)
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.0007, weight_decay=0.01)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100000, eta_min=0.00005)
+
 xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
 xb = xb.to(device) 
 yb = yb.to(device)
@@ -78,6 +79,7 @@ for iterations in range(100000):
     loss = F.cross_entropy(logits, yb, label_smoothing=0.1)
     loss.backward()
     optimizer.step()
+    scheduler.step()
     training_losses.append(loss.item())
 
     if (iterations + 1) % 1000 == 0:
@@ -85,7 +87,7 @@ for iterations in range(100000):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), f"../checkpoints/felixgpt_word_{version}_best.pth")
-            print(f"New best checkpoint saved! Loss (val): {best_val_loss}")
+            print(f"New best checkpoint saved! Loss (val): {best_val_loss}, Iteration: {iterations + 1}")
 
     if len(training_losses) == 5000:
         average_loss = sum(training_losses) / len(training_losses)
@@ -96,7 +98,7 @@ for iterations in range(100000):
 
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-
+"""
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)
