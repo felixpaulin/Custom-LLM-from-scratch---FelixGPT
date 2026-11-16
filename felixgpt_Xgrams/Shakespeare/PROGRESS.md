@@ -164,6 +164,22 @@ Increasing context length from 6 to 8 did not improve validation performance in 
 Generation quality will be evaluated separately.
 
 ---
+### V2.15
+
+- Embedding dimension: 64
+- Hidden width: 160
+- Context length: 8
+- Dropout: 0.35
+- Weight decay: 0.01
+- Label smoothing: 0.1
+- Iterations: 100,000
+- Best validation loss: 5.1222
+- Parameters: 3,469,905
+
+The introduction of GPT-2-style pre-tokenisation produced noticeably improved generation quality, with more convincing Shakespearean phrasing and word combinations.
+
+Validation loss reached its lowest point at iteration 50,000, followed by fluctuations and no further significant improvement. Training loss continued decreasing, suggesting overfitting during the later stages.
+---
 
 ## Current Validation Loss Leaderboard
 
@@ -186,13 +202,13 @@ Rankings are based on manually evaluating generated samples using identical gene
 - Temperature: 0.8
 - Generated tokens: 1,000
 
-|Rank|Model| Generation quality      | Notes                                                    |
-|----|-----|-------------------------|----------------------------------------------------------|
-| 1  | V12 | Best so far             | Strongest overall generation in current comparisons.     |
-| 2  | V11 | Very good               | Good Shakespearean vocabulary and dialogue structure.    |
-| 3  | V13 | Good                    | Similar style, but slightly less convincing overall.     |
-| 4  | V14 | Good but a little broken| Good structure and word choice, but inconsistent grammar.|
-
+| Rank | Model | Generation quality       | Notes                                                                  |
+|------|-------|--------------------------|------------------------------------------------------------------------|
+| 1    | V12   | Best so far              | Strongest overall generation in current comparisons.                   |
+| 2    | V2.15 | Very good                | Improved Shakespearean phrasing and more convincing word combinations. |
+| 3    | V11   | Very good                | Good Shakespearean vocabulary and dialogue structure.                  |
+| 4    | V13   | Good                     | Similar style, but slightly less convincing overall.                   |
+| 5    | V14   | Good but a little broken | Good structure and word choice, but inconsistent grammar.              |
 
 ## Generation Experiments
 
@@ -226,6 +242,11 @@ A collection of particularly memorable generated phrases:
 - "Clown: Hail, my poor – which ever souls"
 - "GLOUCESTER: And do no more corn."
 - "So me so slain."
+- "Good lord:"
+- "Good Marcius, now me, MasterThere"
+- "To wound for love but this contract the crown"
+- "I will no Come is all"
+- "The Titus the gods as thou is half"
 
 ---
 
