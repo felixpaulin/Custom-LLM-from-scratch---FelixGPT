@@ -10,7 +10,7 @@ temperature = 0.8
 embedding_dim = 64
 batch_size = 32
 
-version = "V2.15"
+version = "V2.16"
 
 def estimate_loss(model):
     model.eval()
@@ -50,11 +50,11 @@ class NGramLanguageModel(torch.nn.Module):
 model = NGramLanguageModel(tokens.vocab_size, embedding_dim, tokens.block_size).to(device)
 param_count = sum(p.numel() for p in model.parameters())
 print(f"Number of parameters: {param_count}")
-
+"""
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
-#change lr back to 0.0005 after fine tuning VRJ
-optimizer = torch.optim.AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
+
+optimizer = torch.optim.RMSprop(model.parameters(), lr=0.0001, alpha=0.99, weight_decay=0.01)
 xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
 xb = xb.to(device) 
 yb = yb.to(device)
@@ -95,7 +95,7 @@ for iterations in range(100000):
 
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-"""
+
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)
