@@ -1,0 +1,78 @@
+# FelixGPT Custom Attribution Licence v1.0
+
+Copyright (c) 2026 Felix Paulin
+
+All rights reserved.
+
+## 1. Definitions
+
+"Software" refers to the FelixGPT project, including its source code, scripts, model architectures, documentation and associated original materials.
+
+"Author" refers to the original creator of FelixGPT.
+
+"Derivative Works" refers to modified versions, adaptations or extensions of the Software.
+
+## 2. Permissions
+
+The Author grants permission to individuals to:
+
+- View and study the source code.
+- Use the Software for personal and educational purposes.
+- Modify and experiment with the Software.
+- Create Derivative Works.
+- Share and redistribute the original or modified Software, subject to the conditions below.
+
+## 3. Attribution Requirements
+
+Any redistribution or publication of the Software or Derivative Works must:
+
+- Clearly acknowledge FelixGPT as the original project.
+- Credit the original Author.
+- Retain this licence and all original copyright notices.
+- Clearly identify significant modifications made by other contributors.
+- Not falsely claim original authorship of the original FelixGPT work.
+
+Suggested attribution:
+
+"Based on FelixGPT, originally developed by Felix Paulin."
+
+## 4. Redistribution
+
+Redistribution of the Software and Derivative Works is permitted for non-commercial purposes, provided all attribution requirements in Section 3 are met.
+
+Redistributors must include a copy of this licence with their distribution.
+
+## 5. Commercial Use
+
+Commercial use, commercial redistribution, or incorporation of the Software into commercial products or services requires prior written permission from the Author.
+
+## 6. Restrictions
+
+Users may not:
+
+- Remove or alter original copyright notices.
+- Misrepresent the original authorship of FelixGPT.
+- Redistribute the Software without complying with this licence.
+- Claim ownership of the original FelixGPT source code or original contributions.
+
+## 7. Ownership
+
+The original Software and its original contributions remain the intellectual property of the Author.
+
+Permission to use or modify the Software does not transfer ownership of the original work.
+
+Contributions made by other individuals remain subject to their respective ownership rights.
+
+## 8. Disclaimer of Warranty
+
+The Software is provided "AS IS", without warranty of any kind, express or implied.
+
+The Author shall not be held liable for claims, damages or other liabilities arising from the use or distribution of the Software, to the extent permitted by applicable law.
+
+## 9. Termination
+
+Permissions granted under this licence terminate automatically if a user materially violates its conditions.
+
+## 10. Contact
+
+For commercial licensing, additional permissions or other licensing enquiries, contact the original Author through the FelixGPT GitHub repository.
