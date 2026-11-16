@@ -10,7 +10,7 @@ temperature = 0.8
 embedding_dim = 64
 batch_size = 32
 
-version = "V14"
+version = "V2.15"
 
 def estimate_loss(model):
     model.eval()
@@ -53,7 +53,8 @@ print(f"Number of parameters: {param_count}")
 
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
-optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=0.01)
+#change lr back to 0.0005 after fine tuning VRJ
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
 xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
 xb = xb.to(device) 
 yb = yb.to(device)
