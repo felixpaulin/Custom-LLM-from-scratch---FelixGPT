@@ -50,7 +50,7 @@ class NGramLanguageModel(torch.nn.Module):
 model = NGramLanguageModel(tokens.vocab_size, embedding_dim, tokens.block_size).to(device)
 param_count = sum(p.numel() for p in model.parameters())
 print(f"Number of parameters: {param_count}")
-"""
+
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005, weight_decay=0.01)
@@ -83,7 +83,7 @@ for iterations in range(100000):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), f"../checkpoints/felixgpt_word_{version}_best.pth")
-            print("New best checkpoint saved!")
+            print(f"New best checkpoint saved! Loss (val): {best_val_loss}")
 
     if len(training_losses) == 5000:
         average_loss = sum(training_losses) / len(training_losses)
@@ -92,10 +92,9 @@ for iterations in range(100000):
         print(f"Loss (val): {val_loss}")
         training_losses.clear()
 
-
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-
+"""
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)

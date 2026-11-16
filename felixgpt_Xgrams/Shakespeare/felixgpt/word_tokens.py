@@ -8,6 +8,9 @@ with open("../data/input.txt", "r", encoding="utf-8") as f:
 
 pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
+# Original word-level regex (V1–V14)
+# pattern = r"\r\n|\n|\w+(?:['’]\w+)?|[^\w\s]"
+
 words = re.findall(pattern, text)
 
 vocab_size = len(set(words))
