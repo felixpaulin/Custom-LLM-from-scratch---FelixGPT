@@ -61,5 +61,3 @@ You are welcome to study the implementation and develop your own projects inspir
 Please refer to the `LICENSE` file before using, modifying or redistributing any part of this repository.
 
 ---
-
-**FelixGPT — Built through experimentation, one model at a time.**
