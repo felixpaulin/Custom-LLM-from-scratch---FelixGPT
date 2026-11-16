@@ -1,4 +1,4 @@
-import re
+import regex as re
 import torch
 
 block_size = 8
@@ -6,8 +6,9 @@ block_size = 8
 with open("../data/input.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
+pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
-words = re.findall(r"\n|\w+(?:['’]\w+)?|[^\w\s]", text)
+words = re.findall(pattern, text)
 
 vocab_size = len(set(words))
 vocab = sorted(set(words))
@@ -25,16 +26,10 @@ def encode(s):
     return [stoi[w] for w in s]
 
 def decode(ids):
-    no_space_before = {".", ",", "!", "?", ":", ";", "%", ")", "]", "}"}
     decoded = ""
     for token_id in ids:
         token = itos[int(token_id)]
-        if token == "\n":
-            decoded += "\n"
-        elif not decoded or token in no_space_before or decoded.endswith("\n"):
-            decoded += token
-        else:
-            decoded += " " + token
+        decoded += token
     return decoded
 
 n = int(0.9 * len(words))
@@ -50,3 +45,7 @@ def get_ngram_batch(split, block_size):
     x = torch.stack([d[i:i + block_size] for i in ix])
     y = torch.stack([d[i + block_size] for i in ix])
     return x, y
+
+test = "I say unto you, what he hath done famously, he did it to that end:"
+
+print(decode(encode(re.findall(pattern, test))))
