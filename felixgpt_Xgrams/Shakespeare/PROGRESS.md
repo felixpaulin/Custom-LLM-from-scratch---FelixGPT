@@ -195,34 +195,108 @@ The introduction of GPT-2-style pre-tokenisation produced noticeably improved ge
 Validation loss reached its lowest point at iteration 50,000, followed by fluctuations and no further significant improvement. Training loss continued decreasing, suggesting overfitting during the later stages.
 ---
 
-## Current Validation Loss Leaderboard
+---
 
-| Version | Best Validation Loss |
-|---------|---------------------:|
-| V11     |       5.0830         |
-| V12     |       5.0869         |
-| V13     |       5.0949         |
+## V2.17
 
-Note: Versions 11–13 use the same label smoothing value in validation, making their validation losses reasonably comparable.
+**Configuration:**
+- Optimiser: RMSprop
+- Learning rate: 0.0005
+- Alpha: 0.9
+- Weight decay: 0.01
+- Training iterations: 100,000
+- Architecture and tokenizer: Same as V2.15
+
+**Best validation loss:** Approximately 6.2
+
+**Experiment hypothesis:**
+
+After V2.16 showed disappointing results with RMSprop (alpha 0.99), this experiment tested a lower alpha value and a higher learning rate. The aim was to determine whether RMSprop could perform better with a more responsive gradient averaging mechanism.
+
+**Results and observations:**
+
+- Validation loss was approximately 6.2.
+- Performance was worse than V2.16.
+- RMSprop did not produce the expected improvement.
+
+**Conclusion:**
+
+RMSprop was not a promising alternative to AdamW in these experiments. Both tested configurations performed considerably worse than the established AdamW models. Further RMSprop experimentation is postponed.
 
 ---
 
-## Generation Quality Leaderboard
+## V2.18
 
-Rankings are based on manually evaluating generated samples using identical generation settings.
+**Configuration:**
+- Optimiser: AdamW
+- Initial learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR
+- T_max: 100,000
+- Minimum learning rate: 0.00005
+- Batch size: 32
+- Context length: 8
+- Embedding dimension: 64
+- Hidden dimension: 160
+- Dropout: 0.35
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Tokenizer: GPT-2-style regex pre-tokenisation
+- Parameters: 3,469,905
 
-**Generation settings:**
-- Prompt: `to be or not`
-- Temperature: 0.8
-- Generated tokens: 1,000
+**Best validation loss:** 5.072856 at iteration 94,000
 
-| Rank | Model | Generation quality       | Notes                                                                  |
-|------|-------|--------------------------|------------------------------------------------------------------------|
-| 1    | V12   | Best so far              | Strongest overall generation in current comparisons.                   |
-| 2    | V2.15 | Very good                | Improved Shakespearean phrasing and more convincing word combinations. |
-| 3    | V11   | Very good                | Good Shakespearean vocabulary and dialogue structure.                  |
-| 4    | V13   | Good                     | Similar style, but slightly less convincing overall.                   |
-| 5    | V14   | Good but a little broken | Good structure and word choice, but inconsistent grammar.              |
+**Experiment hypothesis:**
+
+After experimenting with RMSprop, this version returned to AdamW and introduced cosine annealing learning-rate scheduling. The hypothesis was that starting with a higher learning rate and gradually reducing it would allow faster initial learning while enabling smaller, more refined updates towards the end of training.
+
+**Results and observations:**
+
+- Best validation loss: 5.072856 at 94,000 iterations.
+- Final training loss: 5.336521 at 100,000 iterations.
+- Final validation loss: 5.130192 at 100,000 iterations.
+- Validation loss continued reaching new lows throughout much of training.
+- The model produced noticeably more convincing Shakespearean-style text than previous versions.
+- Longer sections contained more coherent dialogue, recognisable character interactions and convincing vocabulary combinations.
+
+**Conclusion:**
+
+V2.18 achieved the best validation loss so far and produced the strongest generation quality observed in the project to date.
+
+The introduction of cosine annealing appears promising, although the initial learning rate was also increased from 0.0005 to 0.0007, meaning the individual contribution of the scheduler has not yet been isolated.
+
+V2.18 represents a significant improvement in the development of the word-level N-gram models.
+
+---
+
+# Validation Loss Leaderboard
+
+| Rank | Model | Best validation loss |
+|------|-------|----------------------|
+| 1    | V2.18 | 5.072856             |
+| 2    | V11   | 5.083014             |
+| 3    | V12   | 5.086921             |
+| 4    | V2.15 | 5.122185             |
+| 5    | V14   | 5.137740             |
+| 6    | V9    | 5.169656             |
+| 7    | V10   | 5.190013             |
+| 8    | V8    | 5.499309             |
+| 9    | V7    | 5.628721             |
+| 10   | V4    | 5.702300             |
+
+*Note: These results involve different model configurations and, in some cases, different tokenizers. Validation losses are therefore not perfectly comparable.*
+
+# Generation Quality Leaderboard
+
+| Rank | Model | Text quality | Notes                                                                               |
+|------|-------|--------------|-------------------------------------------------------------------------------------|
+| 1    | V2.18 | Excellent so far | Most convincing longer passages; improved dialogue and vocabulary combinations. |
+| 2    | V12   | Very good | Previously the strongest overall generation.                                           |
+| 3    | V2.15 | Good | GPT-2-style regex pre-tokenisation produced promising results.                              |
+| 4    | V11   | Good | Strong vocabulary combinations and recognisable Shakespearean style.                        |
+| 5    | V13   | Moderate | Interesting phrases, but inconsistent sentence construction.                            |
+| 6    | V14   | Moderate | Less convincing generation than V12 and V2.15.                                          |
 
 ## Generation Experiments
 
@@ -262,6 +336,8 @@ A collection of particularly memorable generated phrases:
 - "I will no Come is all"
 - "The Titus the gods as thou is half"
 - "Nurse: I cannot warrant."
+- "I mickle you were all, which did of the heavens of Corioli"
+- "The sink at to lay grace and"
 
 ---
 
