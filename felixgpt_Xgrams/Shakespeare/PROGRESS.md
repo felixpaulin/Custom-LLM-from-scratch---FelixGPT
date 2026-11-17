@@ -354,11 +354,13 @@ V2.20 became the new best-performing model by validation loss while using fewer 
 | Rank | Model | Text quality | Notes                                                                               |
 |------|-------|--------------|-------------------------------------------------------------------------------------|
 | 1    | V2.18 | Excellent so far | Most convincing longer passages; improved dialogue and vocabulary combinations. |
-| 2    | V12   | Very good | Previously the strongest overall generation.                                           |
+| 2    | V12   | Very good    | Previously the strongest overall generation.                                        |
 | 3    | V2.15 | Good | GPT-2-style regex pre-tokenisation produced promising results.                              |
 | 4    | V11   | Good | Strong vocabulary combinations and recognisable Shakespearean style.                        |
 | 5    | V13   | Moderate | Interesting phrases, but inconsistent sentence construction.                            |
 | 6    | V14   | Moderate | Less convincing generation than V12 and V2.15.                                          |
+
+*Note: V2.19 and V2.20 Actually had the best generation so far, I just don't want to rewrite the table entirly, I'll update it once there is a substantially better or just better model again.*
 
 ## Generation Experiments
 
