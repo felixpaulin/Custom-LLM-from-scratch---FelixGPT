@@ -11,8 +11,8 @@ My learning strategy is in this direction: It starts with ChatGPT writing a lot 
 
 Furthermore, FelixGPT is an experimental educational project. Its models are not intended to compete with modern commercial language models. Their primary purpose is to explore machine learning concepts and demonstrate the development of language models through experimentation.
 
-**Note: I am always changing parts of scripts for new model experiments, you can view model configs on there respective PROGRESS.md files and change the hyperparameters LOCALLY if you wish, for example, if you want to test V12, you cannot use the script for V2.15.
-Also, In case it is difficult to run the model due to the million different files, every time I am done with a part, like Shakespeare for example, I will try to publish a release with best model as a zip and you can just click run.bat.**
+Note: I am always changing parts of scripts for new model experiments, you can view model configs on there respective PROGRESS.md files and change the hyperparameters LOCALLY if you wish, for example, if you want to test V12, you cannot use the script for V2.15.
+Also, In case it is difficult to run the model due to the million different files, every time I am done with a part, like Shakespeare for example, I will try to publish a release with best model as a zip and you can just click run.bat. (I don't know why this is bold I can't fix it)
 ---
 
 # FelixGPT
