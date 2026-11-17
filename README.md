@@ -10,6 +10,8 @@ I did not make everything myself. In the earlier files such as the bigram ones I
 My learning strategy is in this direction: It starts with ChatGPT writing a lot more than me and explaining, then (currently) I write more and larger parts myself with ChatGPT checking it as well as providing parts of new or complex aspects. Eventually I aim to be able to write substantial parts myself with ChatGPT only checking it roughly.
 
 Furthermore, FelixGPT is an experimental educational project. Its models are not intended to compete with modern commercial language models. Their primary purpose is to explore machine learning concepts and demonstrate the development of language models through experimentation.
+
+Note: I am always changing parts of scripts for new model experiments, you can view model configs on there respective PROGRESS.md files and change the hyperparameters LOCALLY if you wish, for example, if you want to test V12, you cannot use the script for V2.15.
 ---
 
 # FelixGPT
