@@ -269,21 +269,83 @@ The introduction of cosine annealing appears promising, although the initial lea
 V2.18 represents a significant improvement in the development of the word-level N-gram models.
 
 ---
+## V2.19
+
+**Configuration:**
+- Embedding dimension: 56
+- Hidden layer: 160
+- Context length: 8
+- Dropout: 0.35
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR (T_max=100000, eta_min=0.00005)
+- Batch size: 32
+- Label smoothing: 0.1
+- Iterations: 100,000
+- Validation batches: 500
+- Parameters: 3,339,209
+
+**Experiment hypothesis:**
+
+Reduce the embedding dimension from 64 to 56 while retaining the remaining V2.18 configuration. Investigate whether a smaller embedding can maintain similar performance with fewer parameters.
+
+**Results and observations:**
+- Best validation loss: 5.076565 at iteration 94,000.
+- Final training loss: 5.350932.
+- Final validation loss: 5.130794.
+- Approximately 3.77% fewer parameters than V2.18.
+- Generation quality appeared broadly similar to V2.18.
+
+**Conclusion:**
+
+The smaller embedding retained almost identical validation performance while reducing the parameter count. A successful parameter-efficiency experiment.
+---
+## V2.20
+
+**Configuration:**
+- Embedding dimension: 72
+- Hidden layer: 136
+- Context length: 8
+- Dropout: 0.35
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR (T_max=100000, eta_min=0.00005)
+- Batch size: 32
+- Label smoothing: 0.1
+- Iterations: 100,000
+- Validation batches: 500
+- Parameters: 3,225,385
+
+**Experiment hypothesis:**
+
+Increase the embedding dimension to 72 while reducing the hidden layer to 136. Investigate whether this combination improves performance while further reducing the overall parameter count.
+
+**Results and observations:**
+- Best validation loss: 5.056226 at iteration 99,000.
+- Final training loss: 5.359057.
+- Final validation loss: 5.143730.
+- Approximately 7.05% fewer parameters than V2.18.
+- Achieved the lowest validation loss of all versions so far.
+- Generation produced convincing Shakespearean dialogue structures and several interesting linguistic fragments.
+- Top-p sampling experiments (p=0.85 and p=0.95) produced substantially worse generations than the original multinomial sampling method.
+
+**Conclusion:**
+
+V2.20 became the new best-performing model by validation loss while using fewer parameters than V2.18. The embedding/hidden dimension combination proved successful. Top-p sampling was unsuccessful in initial generation experiments.
+---
 
 # Validation Loss Leaderboard
 
 | Rank | Model | Best validation loss |
 |------|-------|----------------------|
-| 1    | V2.18 | 5.072856             |
-| 2    | V11   | 5.083014             |
-| 3    | V12   | 5.086921             |
-| 4    | V2.15 | 5.122185             |
-| 5    | V14   | 5.137740             |
-| 6    | V9    | 5.169656             |
-| 7    | V10   | 5.190013             |
-| 8    | V8    | 5.499309             |
-| 9    | V7    | 5.628721             |
-| 10   | V4    | 5.702300             |
+| 1    | V2.20 | 5.056226             |
+| 2    | V2.18 | 5.072856             |
+| 3    | V2.19 | 5.076565             |
+| 4    | V11   | 5.083014             |
+| 5    | V12   | 5.086921             |
+| 6    | V2.15 | 5.122185             |
 
 *Note: These results involve different model configurations and, in some cases, different tokenizers. Validation losses are therefore not perfectly comparable.*
 
@@ -338,6 +400,7 @@ A collection of particularly memorable generated phrases:
 - "Nurse: I cannot warrant."
 - "I mickle you were all, which did of the heavens of Corioli"
 - "The sink at to lay grace and"
+- "A fatal page to make?"
 
 ---
 
