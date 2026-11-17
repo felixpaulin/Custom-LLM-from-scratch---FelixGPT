@@ -58,6 +58,12 @@ This project is intended to be a learning experience, and I'm happy for others t
 
 You are welcome to study the implementation and develop your own projects inspired by this work, provided you respect the terms of the project's licence.
 
-Please refer to the `LICENSE` file before using, modifying or redistributing any part of this repository.
+Please refer to the `LICENSE` and `LICENSE-MODEL` files before using, modifying or redistributing any part of this repository.
 
+## License
+
+This repository uses a dual-license structure:
+
+Model Source Code (all `.py` scripts):** Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). Attribution is required per the [NOTICE](NOTICE) file.
+Trained Model Weights (`checkpoints/` and all `.pth` files): Licensed under [Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)](LICENSE-MODEL). You must credit **FelixGPT by Felix Paulin** when sharing or adapting these weights.
 ---
