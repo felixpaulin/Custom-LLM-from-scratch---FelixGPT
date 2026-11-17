@@ -7,10 +7,10 @@ device = torch_directml.device()
 print("Using device:", device)
 
 temperature = 0.8
-embedding_dim = 64
+embedding_dim = 72
 batch_size = 32
 
-version = "V2.18"
+version = "V2.20"
 
 def estimate_loss(model):
     model.eval()
@@ -32,8 +32,8 @@ class NGramLanguageModel(torch.nn.Module):
 
         self.embedding_table = torch.nn.Embedding(vocab_size, embedding_dim)
 
-        self.hidden = torch.nn.Linear(embedding_dim * block_size, 160)
-        self.output = torch.nn.Linear(160, vocab_size)
+        self.hidden = torch.nn.Linear(embedding_dim * block_size, 136)
+        self.output = torch.nn.Linear(136, vocab_size)
         self.dropout = torch.nn.Dropout(0.35)
 
     def forward(self, idx):
@@ -99,6 +99,7 @@ for iterations in range(100000):
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
 """
+
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)
