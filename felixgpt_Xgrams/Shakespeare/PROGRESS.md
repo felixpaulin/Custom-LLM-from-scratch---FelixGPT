@@ -335,17 +335,48 @@ Increase the embedding dimension to 72 while reducing the hidden layer to 136. I
 
 V2.20 became the new best-performing model by validation loss while using fewer parameters than V2.18. The embedding/hidden dimension combination proved successful. Top-p sampling was unsuccessful in initial generation experiments.
 ---
+V2.21
+Configuration:
+- Embedding dimension: 72
+- Hidden layer: 136
+- Context length: 8
+- Dropout: 0.35
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR (T_max=100000, eta_min=0.00005)
+- Batch size: 32
+- Label smoothing: 0.1
+- Iterations: 100,000
+- Validation batches: 500
+- Architecture: Weight tying with output projection (136 → 72)
+- Parameters: 2,256,544
+Experiment hypothesis:
 
+Introduce weight tying by sharing the embedding table's weights with the output layer. Since the hidden dimension (136) differs from the embedding dimension (72), add an output projection to transform the hidden representation into the embedding space. Investigate whether this architecture can reduce the parameter count while maintaining or improving model performance.
+
+Results and observations:
+- Best validation loss: 4.938042 at iteration 91,000.
+- Final training loss: 5.368757.
+- Final validation loss: 4.970418.
+- Approximately 30.04% fewer parameters than V2.20 (968,841 fewer).
+- Improved best validation loss by approximately 2.34% compared with V2.20.
+- First FelixGPT model to achieve a validation loss below 5.0.
+- Generation produced convincing Shakespearean dialogue structures, recognisable character names and several interesting linguistic fragments.
+- Notable generation: "So, I have a foes of my subjects" — a particularly interesting example of partially coherent sentence structure and correct plural forms.
+Conclusion:
+
+V2.21 became the new best-performing model by validation loss. Weight tying, combined with an output projection, substantially reduced the parameter count while also improving validation performance. The experiment demonstrated that a smaller architecture could outperform V2.20, making this a major step forward for FelixGPT.
+---
 # Validation Loss Leaderboard
 
 | Rank | Model | Best validation loss |
 |------|-------|----------------------|
-| 1    | V2.20 | 5.056226             |
-| 2    | V2.18 | 5.072856             |
-| 3    | V2.19 | 5.076565             |
-| 4    | V11   | 5.083014             |
-| 5    | V12   | 5.086921             |
-| 6    | V2.15 | 5.122185             |
+| 1    | V2.21 | 4.938042             |
+| 2    | V2.20 | 5.056226             |
+| 3    | V2.18 | 5.072856             |
+| 4    | V2.19 | 5.076565             |
+| 5    | V11   | 5.083014             |
 
 *Note: These results involve different model configurations and, in some cases, different tokenizers. Validation losses are therefore not perfectly comparable.*
 
@@ -353,14 +384,11 @@ V2.20 became the new best-performing model by validation loss while using fewer 
 
 | Rank | Model | Text quality | Notes                                                                               |
 |------|-------|--------------|-------------------------------------------------------------------------------------|
-| 1    | V2.18 | Excellent so far | Most convincing longer passages; improved dialogue and vocabulary combinations. |
-| 2    | V12   | Very good    | Previously the strongest overall generation.                                        |
-| 3    | V2.15 | Good | GPT-2-style regex pre-tokenisation produced promising results.                              |
-| 4    | V11   | Good | Strong vocabulary combinations and recognisable Shakespearean style.                        |
-| 5    | V13   | Moderate | Interesting phrases, but inconsistent sentence construction.                            |
-| 6    | V14   | Moderate | Less convincing generation than V12 and V2.15.                                          |
-
-*Note: V2.19 and V2.20 Actually had the best generation so far, I just don't want to rewrite the table entirly, I'll update it once there is a substantially better or just better model again.*
+| 1    | V2.21 | Best by far  | Best long term coherence, it has much better dialogue and sentences (grammatically).|
+| 2    | V2.18 | Very good    | Most convincing longer passages; improved dialogue and vocabulary combinations.     |
+| 3    | V12   | Very good    | Previously the strongest overall generation but behind in grammar and coherence.    |
+| 4    | V2.15 | Good         | GPT-2-style regex pre-tokenisation produced promising results.                      |
+| 5    | V11   | Good         | Strong vocabulary combinations and recognisable Shakespearean style.                |
 
 ## Generation Experiments
 
@@ -390,19 +418,17 @@ A collection of particularly memorable generated phrases:
 - "rap and fear to Warwick"
 - "To be Stab"
 - "Ay, sir"
-- "The sink at to lay grace and"
 - "Clown: Hail, my poor – which ever souls"
 - "GLOUCESTER: And do no more corn."
 - "So me so slain."
 - "Good lord:"
 - "Good Marcius, now me, MasterThere"
-- "To wound for love but this contract the crown"
 - "I will no Come is all"
-- "The Titus the gods as thou is half"
 - "Nurse: I cannot warrant."
 - "I mickle you were all, which did of the heavens of Corioli"
 - "The sink at to lay grace and"
 - "A fatal page to make?"
+- "So, I have a foes of my subjects"
 
 ---
 

@@ -1,3 +1,6 @@
+# Use this command in PS to navigate to felixgpt from the root folder quickly:
+# "cd felixgpt_Xgrams && cd Shakespeare && cd felixgpt"
+
 import torch
 import word_tokens as tokens
 import torch.nn.functional as F
@@ -8,9 +11,10 @@ print("Using device:", device)
 
 temperature = 0.8
 embedding_dim = 72
+hidden_dim = 136
 batch_size = 32
 
-version = "V2.20"
+version = "V2.21"
 
 def estimate_loss(model):
     model.eval()
@@ -31,9 +35,12 @@ class NGramLanguageModel(torch.nn.Module):
         super().__init__()
 
         self.embedding_table = torch.nn.Embedding(vocab_size, embedding_dim)
+        self.hidden = torch.nn.Linear(embedding_dim * block_size, hidden_dim)
+        # use this for models before V2.21: self.output = torch.nn.Linear(hidden_dim, vocab_size)
+        self.output_projection = torch.nn.Linear(hidden_dim, embedding_dim)
+        self.output = torch.nn.Linear(embedding_dim, vocab_size, bias=False)
+        self.output.weight = self.embedding_table.weight
 
-        self.hidden = torch.nn.Linear(embedding_dim * block_size, 136)
-        self.output = torch.nn.Linear(136, vocab_size)
         self.dropout = torch.nn.Dropout(0.35)
 
     def forward(self, idx):
@@ -43,6 +50,7 @@ class NGramLanguageModel(torch.nn.Module):
 
         x = F.relu(x)
         x = self.dropout(x)
+        x = self.output_projection(x)
 
         logits = self.output(x)
         return logits
@@ -99,7 +107,6 @@ for iterations in range(100000):
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
 """
-
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)
