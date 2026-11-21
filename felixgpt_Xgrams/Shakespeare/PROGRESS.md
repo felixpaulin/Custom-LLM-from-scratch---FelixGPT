@@ -1,9 +1,9 @@
-# FelixGPT — Shakespeare Word-Level N-Gram Model
+# FelixGPT — Shakespeare Models
 Project Progress Log
 
 ## Project Overview
 
-FelixGPT is an experimental word-level N-gram language model trained on the Tiny Shakespeare dataset.
+FelixGPT is an experimental (currently) word-level N-gram language model trained on the Tiny Shakespeare dataset.
 
 The objective is to develop a model capable of generating increasingly coherent, grammatically correct and Shakespeare-inspired text.
 
@@ -26,7 +26,7 @@ The original experiment that started FelixGPT. A simple character-level bigram m
 
 Although limited in capability, it established the foundation for the later neural N-gram models and subsequent experiments.
 
-You can use and view it verison as the xxxk pth checkpoint file and suing the step1_tokens tokenizer and the bigram model files. Use generate.py to use it, keep in mind, you can only type one character.
+You can use and view it verison as the xxxk pth checkpoint file and using  the step1_tokens tokenizer and the bigram model files. Use generate.py to use it, keep in mind, you can only type one character.
 
 ### Project Evolution
 
@@ -44,6 +44,8 @@ The model consists of:
 3. A ReLU activation function.
 4. A dropout layer to reduce overfitting.
 5. An output layer that predicts the next token.
+
+(this has changed and will still change in the future)
 
 The model is trained using next-token prediction.
 
@@ -157,7 +159,7 @@ This suggests overfitting became more pronounced during the later stages.
 - Weight decay: 0.01
 - Label smoothing: 0.1
 - Iterations: 100,000
-- Best validation loss: **5.1377**
+- Best validation loss: 5.1377
 - Best iteration: 45,000
 - Parameters: 3,299,130
 
@@ -179,6 +181,7 @@ Generation quality will be evaluated separately.
 
 ---
 ### V2.15
+(I changed the version naming from Vxx to V2.xx, this means when I move on to conversational models and so I can use V3.xx, V4.xx, etc...)
 
 - Embedding dimension: 64
 - Hidden width: 160
@@ -194,7 +197,7 @@ The introduction of GPT-2-style pre-tokenisation produced noticeably improved ge
 
 Validation loss reached its lowest point at iteration 50,000, followed by fluctuations and no further significant improvement. Training loss continued decreasing, suggesting overfitting during the later stages.
 ---
-
+It seems V2.16 is missing, I wonder where it went (honestly).
 ---
 
 ## V2.17
@@ -221,7 +224,7 @@ After V2.16 showed disappointing results with RMSprop (alpha 0.99), this experim
 
 **Conclusion:**
 
-RMSprop was not a promising alternative to AdamW in these experiments. Both tested configurations performed considerably worse than the established AdamW models. Further RMSprop experimentation is postponed.
+RMSprop was not a promising alternative to AdamW in these experiments. Both tested configurations performed considerably worse than the established AdamW models.
 
 ---
 
@@ -262,7 +265,7 @@ After experimenting with RMSprop, this version returned to AdamW and introduced 
 
 **Conclusion:**
 
-V2.18 achieved the best validation loss so far and produced the strongest generation quality observed in the project to date.
+V2.18 achieved the best validation loss so far and produced the strongest generation quality observed at the time.
 
 The introduction of cosine annealing appears promising, although the initial learning rate was also increased from 0.0005 to 0.0007, meaning the individual contribution of the scheduler has not yet been isolated.
 
@@ -505,6 +508,45 @@ Adding a second hidden layer while maintaining the same hidden dimension could a
 
 **Conclusion:**  
 Adding a second hidden layer improved validation performance and produced promising generation results. The experiment demonstrated that increasing network depth could be more beneficial than simply increasing context length. V2.25 became the new best-performing model, although further generation comparisons are needed to establish whether grammatical quality and long-term coherence improved consistently.
+
+---
+
+## V2.26
+
+**Configuration:**
+- Architecture: Two-hidden-layer weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension 1: 136
+- Hidden dimension 2: 160
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=100,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Parameters: 2,260,608
+
+**Hypothesis:**  
+Increasing the second hidden layer from 136 to 160 neurons could provide additional representational capacity, potentially improving next-token prediction and generated text quality while maintaining the existing architecture.
+
+**Observations:**
+- Best validation loss: 4.82736 at iteration 100,000.
+- Final training loss: 5.39060.
+- Final validation loss: 4.82736.
+- Achieved a new all-time best validation loss.
+- Improved upon V2.25, reducing validation loss from 4.83334 to 4.82736.
+- Best validation loss was achieved at the final training iteration.
+- Generated text contained promising Shakespearean expressions and dialogue-like structures.
+- Notable phrases included "I'll have the father of winter", "I can warrant your mother" and "To give the destiny, love for a name."
+- Hall of Fame: "I'll have the father of winter."
+
+**Conclusion:**
+Increasing the second hidden layer to 160 neurons produced a modest improvement over V2.25 and established a new validation-loss record. The experiment suggested that increasing network capacity could still provide benefits, although the improvement was relatively small.
+
 ---
 
 ## V2.27
@@ -577,7 +619,6 @@ A collection of particularly memorable generated phrases:
 - "GLOUCESTER: And do no more corn."
 - "So me so slain."
 - "Good lord:"
-- "Good Marcius, now me, MasterThere"
 - "I will no Come is all"
 - "Nurse: I cannot warrant."
 - "I mickle you were all, which did of the heavens of Corioli"
