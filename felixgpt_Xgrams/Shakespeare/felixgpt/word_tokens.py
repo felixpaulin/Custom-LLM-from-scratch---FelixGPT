@@ -1,7 +1,7 @@
 import regex as re
 import torch
 
-block_size = 8
+block_size = 6
 
 with open("../data/input.txt", "r", encoding="utf-8") as f:
     text = f.read()

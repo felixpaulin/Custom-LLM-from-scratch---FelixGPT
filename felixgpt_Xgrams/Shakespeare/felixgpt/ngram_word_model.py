@@ -5,6 +5,9 @@ import torch
 import word_tokens as tokens
 import torch.nn.functional as F
 import torch_directml
+import time
+
+start_time = time.time()
 
 device = torch_directml.device()
 print("Using device:", device)
@@ -12,9 +15,10 @@ print("Using device:", device)
 temperature = 0.8
 embedding_dim = 72
 hidden_dim = 136
+hidden_dim2 = 192
 batch_size = 32
 
-version = "V2.21"
+version = "V2.27"
 
 def estimate_loss(model):
     model.eval()
@@ -36,8 +40,10 @@ class NGramLanguageModel(torch.nn.Module):
 
         self.embedding_table = torch.nn.Embedding(vocab_size, embedding_dim)
         self.hidden = torch.nn.Linear(embedding_dim * block_size, hidden_dim)
+        # remove this line for model before V2.25
+        self.hidden2 = torch.nn.Linear(hidden_dim, hidden_dim2)
         # use this for models before V2.21: self.output = torch.nn.Linear(hidden_dim, vocab_size)
-        self.output_projection = torch.nn.Linear(hidden_dim, embedding_dim)
+        self.output_projection = torch.nn.Linear(hidden_dim2, embedding_dim)
         self.output = torch.nn.Linear(embedding_dim, vocab_size, bias=False)
         self.output.weight = self.embedding_table.weight
 
@@ -50,6 +56,9 @@ class NGramLanguageModel(torch.nn.Module):
 
         x = F.relu(x)
         x = self.dropout(x)
+        x = self.hidden2(x)
+        x = F.relu(x)
+        x = self.dropout(x)
         x = self.output_projection(x)
 
         logits = self.output(x)
@@ -58,12 +67,11 @@ class NGramLanguageModel(torch.nn.Module):
 model = NGramLanguageModel(tokens.vocab_size, embedding_dim, tokens.block_size).to(device)
 param_count = sum(p.numel() for p in model.parameters())
 print(f"Number of parameters: {param_count}")
-
+"""
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
-
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.0007, weight_decay=0.01)
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100000, eta_min=0.00005)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=150000, eta_min=0.00005)
 
 xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
 xb = xb.to(device) 
@@ -78,7 +86,7 @@ best_val_loss = float("inf")
 
 print(f"Training FelixGPT Ngram model {version}!")
 
-for iterations in range(100000):
+for iterations in range(150000):
     optimizer.zero_grad()
     xb, yb = tokens.get_ngram_batch("train", tokens.block_size)
     xb = xb.to(device)
@@ -106,7 +114,7 @@ for iterations in range(100000):
 
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-"""
+
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)

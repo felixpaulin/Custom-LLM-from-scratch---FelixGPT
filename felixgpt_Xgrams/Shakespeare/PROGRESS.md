@@ -335,7 +335,7 @@ Increase the embedding dimension to 72 while reducing the hidden layer to 136. I
 
 V2.20 became the new best-performing model by validation loss while using fewer parameters than V2.18. The embedding/hidden dimension combination proved successful. Top-p sampling was unsuccessful in initial generation experiments.
 ---
-V2.21
+## V2.21
 Configuration:
 - Embedding dimension: 72
 - Hidden layer: 136
@@ -351,11 +351,11 @@ Configuration:
 - Validation batches: 500
 - Architecture: Weight tying with output projection (136 → 72)
 - Parameters: 2,256,544
-Experiment hypothesis:
 
+**Experiment hypothesis:**
 Introduce weight tying by sharing the embedding table's weights with the output layer. Since the hidden dimension (136) differs from the embedding dimension (72), add an output projection to transform the hidden representation into the embedding space. Investigate whether this architecture can reduce the parameter count while maintaining or improving model performance.
 
-Results and observations:
+**Results and observations:**
 - Best validation loss: 4.938042 at iteration 91,000.
 - Final training loss: 5.368757.
 - Final validation loss: 4.970418.
@@ -368,27 +368,182 @@ Conclusion:
 
 V2.21 became the new best-performing model by validation loss. Weight tying, combined with an output projection, substantially reduced the parameter count while also improving validation performance. The experiment demonstrated that a smaller architecture could outperform V2.20, making this a major step forward for FelixGPT.
 ---
-# Validation Loss Leaderboard
+## V2.22
 
-| Rank | Model | Best validation loss |
-|------|-------|----------------------|
-| 1    | V2.21 | 4.938042             |
-| 2    | V2.20 | 5.056226             |
-| 3    | V2.18 | 5.072856             |
-| 4    | V2.19 | 5.076565             |
-| 5    | V11   | 5.083014             |
+**Configuration:**
+- Architecture: Weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension: 136
+- Context length: 10
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=100,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Parameters: 2,276,128
 
-*Note: These results involve different model configurations and, in some cases, different tokenizers. Validation losses are therefore not perfectly comparable.*
+**Hypothesis:**  
+Increasing the context window should allow the model to consider more preceding tokens when predicting the next token, potentially improving its ability to learn longer word relationships.
 
-# Generation Quality Leaderboard
+**Observations:**
+- Best validation loss: 4.91191 at iteration 63,000.
+- Final training loss: 5.21050.
+- Final validation loss: 5.01896.
+- Improved validation loss compared with V2.21 (4.93804).
+- Generated text contained several interesting dialogue-like fragments.
+- Hall of Fame: "What shall men yield"
 
-| Rank | Model | Text quality | Notes                                                                               |
-|------|-------|--------------|-------------------------------------------------------------------------------------|
-| 1    | V2.21 | Best by far  | Best long term coherence, it has much better dialogue and sentences (grammatically).|
-| 2    | V2.18 | Very good    | Most convincing longer passages; improved dialogue and vocabulary combinations.     |
-| 3    | V12   | Very good    | Previously the strongest overall generation but behind in grammar and coherence.    |
-| 4    | V2.15 | Good         | GPT-2-style regex pre-tokenisation produced promising results.                      |
-| 5    | V11   | Good         | Strong vocabulary combinations and recognisable Shakespearean style.                |
+**Conclusion:**  
+Increasing the context window from 8 to 10 tokens improved validation performance. However, the improvement was relatively small, and further experiments were needed to determine whether longer context windows consistently benefited the model.
+
+---
+
+## V2.23
+
+**Configuration:**
+- Architecture: Weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension: 136
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=100,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Parameters: 2,236,960
+
+**Hypothesis:**  
+A shorter context window could reduce the number of parameters and potentially improve generalisation by encouraging the model to focus on more immediate word relationships.
+
+**Observations:**
+- Best validation loss: 4.88001 at iteration 61,000.
+- Final training loss: 5.34828.
+- Final validation loss: 4.94471.
+- Achieved a new all-time best validation loss.
+- Outperformed both the 8-token and 10-token configurations.
+- Generated text showed recurring Shakespearean expressions, character labels and dialogue-like structures.
+- Hall of Fame: "My lord" (recurring expression).
+
+**Conclusion:**  
+Reducing the context window to 6 tokens produced the best validation performance so far, despite having fewer parameters than previous versions. This demonstrated that a larger context window did not necessarily result in better performance.
+
+---
+
+## V2.24
+
+**Configuration:**
+- Architecture: Weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension: 136
+- Context length: 12
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=100,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Parameters: 2,295,712
+
+**Hypothesis:**  
+Increasing the context window to 12 tokens could allow the model to learn more complex word relationships and improve its ability to maintain grammatical structures.
+
+**Observations:**
+- Best validation loss: 4.97002 at iteration 100,000.
+- Final training loss: 5.48995.
+- Final validation loss: 4.97002.
+- Continued improving throughout training, reaching its best result at the final iteration.
+- Achieved worse validation performance than V2.21, V2.22 and V2.23.
+- Generated text maintained Shakespearean vocabulary, character labels and dialogue formatting, although grammatical inconsistencies remained.
+
+**Conclusion:**  
+Increasing the context window to 12 tokens did not improve validation performance. Despite having the largest parameter count among the context-length experiments, V2.24 performed worse than the shorter-context configurations. This further suggested that increasing context length alone was not sufficient to improve the model.
+
+---
+
+## V2.25
+
+**Configuration:**
+- Architecture: Two-hidden-layer, weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension 1: 136
+- Hidden dimension 2: 136
+- Context length: 6
+- Dropout: 0.35 (applied after both hidden layers)
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=100,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 100,000
+- Validation batches: 500
+- Parameters: 2,255,592
+
+**Hypothesis:**  
+Adding a second hidden layer while maintaining the same hidden dimension could allow the model to perform more complex transformations of its learned representations, potentially improving grammatical patterns and generalisation.
+
+**Observations:**
+- Best validation loss: 4.83334 at iteration 98,000.
+- Final training loss: 5.39471.
+- Final validation loss: 4.90570.
+- Achieved a new all-time best validation loss.
+- Improved upon V2.23 despite increasing the parameter count by only 18,632 (approximately 0.83%).
+- Continued improving considerably later into training than V2.23.
+- Generated text showed promising sentence structures and convincing Shakespearean dialogue fragments.
+- Examples included "I pardon thy woe, good sir" and "I will not sin to be the queen".
+
+**Conclusion:**  
+Adding a second hidden layer improved validation performance and produced promising generation results. The experiment demonstrated that increasing network depth could be more beneficial than simply increasing context length. V2.25 became the new best-performing model, although further generation comparisons are needed to establish whether grammatical quality and long-term coherence improved consistently.
+---
+
+## V2.27
+
+**Configuration:**
+- Architecture: Two-hidden-layer weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimension 1: 136
+- Hidden dimension 2: 192
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Scheduler: Cosine Annealing (T_max=150,000, eta_min=0.00005)
+- Label smoothing: 0.1
+- Training iterations: 150,000
+- Validation batches: 500
+- Parameters: 2,267,296
+
+**Hypothesis:**  
+Increasing the second hidden layer from 160 to 192 neurons could give the model additional capacity to process token representations and potentially improve next-token prediction without substantially increasing the parameter count.
+
+**Observations:**
+- Best validation loss: 4.81681 at iteration 107,000 (original run).
+- Final training loss: 5.35344 at iteration 110,000 (original run).
+- Final validation loss: 4.85914 at iteration 110,000 (original run).
+- Second training run completed all 150,000 iterations.
+- Second run's best validation loss: 4.83647 at iteration 130,000.
+- Second run's final training loss: 5.28974.
+- Second run's final validation loss: 4.82749.
+- Second run did not improve upon the original checkpoint, which was preserved.
+- Generated text showed recognisable Shakespearean expressions, character labels and dialogue-like structures.
+
+**Conclusion:**  
+Increasing the second hidden layer to 192 neurons produced a new best validation loss of 4.81681, outperforming V2.26. A second full training run came very close to reproducing this result but did not surpass it. V2.27 demonstrated consistent performance in the 4.8 validation-loss range.
+
+---
 
 ## Generation Experiments
 
@@ -429,6 +584,11 @@ A collection of particularly memorable generated phrases:
 - "The sink at to lay grace and"
 - "A fatal page to make?"
 - "So, I have a foes of my subjects"
+- "What shall men yield."
+- "My lord."
+- "I pardon thy woe, good sir."
+- "I'll have the father of winter."
+- "And I am the fault of Thomas"
 
 ---
 
