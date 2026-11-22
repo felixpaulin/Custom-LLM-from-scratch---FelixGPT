@@ -16,9 +16,10 @@ temperature = 0.8
 embedding_dim = 72
 hidden_dim = 136
 hidden_dim2 = 192
+hidden_dim3 = 224
 batch_size = 32
 
-version = "V2.27"
+version = "V2.31"
 
 def estimate_loss(model):
     model.eval()
@@ -42,8 +43,10 @@ class NGramLanguageModel(torch.nn.Module):
         self.hidden = torch.nn.Linear(embedding_dim * block_size, hidden_dim)
         # remove this line for model before V2.25
         self.hidden2 = torch.nn.Linear(hidden_dim, hidden_dim2)
-        # use this for models before V2.21: self.output = torch.nn.Linear(hidden_dim, vocab_size)
-        self.output_projection = torch.nn.Linear(hidden_dim2, embedding_dim)
+        # remove this line for models before V2.28
+        self.hidden3 = torch.nn.Linear(hidden_dim2, hidden_dim3)
+        # use this for models before V2.21 insted of the three lines: self.output = torch.nn.Linear(hidden_dim, vocab_size)
+        self.output_projection = torch.nn.Linear(hidden_dim3, embedding_dim)
         self.output = torch.nn.Linear(embedding_dim, vocab_size, bias=False)
         self.output.weight = self.embedding_table.weight
 
@@ -53,12 +56,16 @@ class NGramLanguageModel(torch.nn.Module):
         x = self.embedding_table(idx)
         x = x.flatten(start_dim=1)
         x = self.hidden(x)
-
-        x = F.relu(x)
+        # use F.relu(x) instead of gelu for versions before V2.30
+        # use F.gelu(x) instead of silu or relu for V2.30
+        x = F.silu(x)
         x = self.dropout(x)
         x = self.hidden2(x)
-        x = F.relu(x)
+        x = F.silu(x)
         x = self.dropout(x)
+        x = self.hidden3(x)
+        x= F.silu(x)
+        x= self.dropout(x)
         x = self.output_projection(x)
 
         logits = self.output(x)
@@ -66,8 +73,7 @@ class NGramLanguageModel(torch.nn.Module):
 
 model = NGramLanguageModel(tokens.vocab_size, embedding_dim, tokens.block_size).to(device)
 param_count = sum(p.numel() for p in model.parameters())
-print(f"Number of parameters: {param_count}")
-"""
+
 model.load_state_dict(torch.load(f"../checkpoints/felixgpt_word_{version}_best.pth", map_location=device)) 
 """
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.0007, weight_decay=0.01)
@@ -114,7 +120,8 @@ for iterations in range(150000):
 
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-
+print(f"Number of parameters: {param_count}")
+"""
 def predict(input_ids):
     model.eval()
     input_ids = torch.tensor([input_ids], dtype=torch.long).to(device)

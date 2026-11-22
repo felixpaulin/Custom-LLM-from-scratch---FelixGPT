@@ -1,5 +1,5 @@
 # FelixGPT — Shakespeare Models
-Project Progress Log
+Project Progress Log (this file is massive, 785+ lines haha, but I also have 30+ versions so... yeah)
 
 ## Project Overview
 
@@ -586,6 +586,153 @@ Increasing the second hidden layer from 160 to 192 neurons could give the model 
 Increasing the second hidden layer to 192 neurons produced a new best validation loss of 4.81681, outperforming V2.26. A second full training run came very close to reproducing this result but did not surpass it. V2.27 demonstrated consistent performance in the 4.8 validation-loss range.
 
 ---
+## V2.28
+
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram neural network
+- Embedding dimension: 72
+- Hidden layers: 136 → 192 → 192
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR
+- T_max: 150,000
+- Minimum learning rate: 0.00005
+- Activation: ReLU
+- Label smoothing: 0.1
+- Training iterations: 150,000
+- Validation batches: 500
+- Parameters: 2,304,352
+
+**Hypothesis:**
+
+Introduce a third hidden layer to investigate whether additional depth improves the model's ability to learn complex relationships between token representations.
+
+**Observations:**
+- Best validation loss: 4.86010 at 105,000 iterations.
+- Final training loss: 5.34381.
+- Final validation loss: 4.89767.
+- Did not outperform V2.27 (4.81681).
+- Generated text maintained Shakespearean vocabulary and dialogue formatting, with some recognisable phrases but inconsistent coherence.
+
+**Conclusion:**
+
+Adding a third hidden layer increased model capacity but did not improve validation loss. Increasing depth alone was not sufficient to outperform the existing architecture.
+
+---
+
+## V2.29
+
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram neural network
+- Embedding dimension: 72
+- Hidden layers: 136 → 192 → 224
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR
+- T_max: 150,000
+- Minimum learning rate: 0.00005
+- Activation: ReLU
+- Label smoothing: 0.1
+- Training iterations: 150,000
+- Validation batches: 500
+- Parameters: 2,312,832
+
+**Hypothesis:**
+
+Increase the width of the third hidden layer from 192 to 224 neurons to investigate whether additional capacity improves the model's ability to combine learned representations.
+
+**Observations:**
+- Best validation loss: 4.83364 at 122,000 iterations.
+- Final training loss: 5.33219.
+- Final validation loss: 4.87742.
+- Improved over V2.28 by approximately 0.02646.
+- Came close to V2.27 but did not beat its validation loss.
+- Generated text contained some convincing short expressions, including "It's my agony" and "I have no hope!"
+
+**Conclusion:**
+
+Increasing the third hidden layer's width improved validation performance. However, the model still did not outperform V2.27. This suggested that activation functions might be worth investigating next.
+
+---
+
+## V2.30
+
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram neural network
+- Embedding dimension: 72
+- Hidden layers: 136 → 192 → 224
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR
+- T_max: 150,000
+- Minimum learning rate: 0.00005
+- Activation: GELU
+- Label smoothing: 0.1
+- Training iterations: 150,000
+- Validation batches: 500
+- Parameters: 2,312,832
+
+**Hypothesis:**
+
+Replace ReLU with GELU while keeping the architecture and training configuration unchanged to investigate whether a smoother activation function improves learning and generalisation.
+
+**Observations:**
+- Best validation loss: 4.78941 at 122,000 iterations.
+- Final training loss: 5.19158.
+- Final validation loss: 4.84361.
+- Improved over V2.29 by approximately 0.04423.
+- Beat the previous all-time best, V2.27 (4.81681).
+- Finished with a noticeably lower training loss than V2.29.
+- Generated text showed improvements in dialogue, short phrases and overall coherence.
+
+**Conclusion:**
+
+GELU produced a significant improvement over ReLU in this architecture and established a new all-time best validation loss. This made activation functions a promising area for further experimentation.
+
+---
+
+## V2.31
+
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram neural network
+- Embedding dimension: 72
+- Hidden layers: 136 → 192 → 224
+- Context length: 6
+- Dropout: 0.35
+- Batch size: 32
+- Optimiser: AdamW
+- Learning rate: 0.0007
+- Weight decay: 0.01
+- Scheduler: CosineAnnealingLR
+- T_max: 150,000
+- Minimum learning rate: 0.00005
+- Activation: SiLU
+- Label smoothing: 0.1
+- Training iterations: 150,000
+- Validation batches: 500
+- Parameters: 2,312,832
+
+**Hypothesis:**
+
+Replace GELU with SiLU while keeping everything else unchanged to investigate whether SiLU's different smooth activation curve can improve performance further.
+
+**Observations:**
+- Best validation loss: 4.78443 at 122,000 iterations.
+- Final training loss: 5.16676.
+- Final validation loss: 4.848
+---
 
 ## Generation Experiments
 
@@ -630,7 +777,10 @@ A collection of particularly memorable generated phrases:
 - "I pardon thy woe, good sir."
 - "I'll have the father of winter."
 - "And I am the fault of Thomas"
-
+- "The hours of his of his friend."
+- "It's my agony."
+- "No, my lord."
+- "Alack, and so, convey you: my gracious lord."
 ---
 
 *FelixGPT — Teaching a computer to speak Shakespeare, one questionable sentence at a time.*
