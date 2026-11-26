@@ -1,12 +1,20 @@
 import regex as re
 import torch
 
+# use block_size = 6 for models other than V2.32
 block_size = 6
 
 with open("../data/input.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+# use this regex for versions before V2.34
+# pattern = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+
+# use this for V2.34
+# pattern = r"""(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
+
+# use this for V2.35
+pattern = r"[\p{L}\p{M}]+[ ]?|[\p{N}]{1,3}[ ]?|['’]|[#@]|[^\s\p{L}\p{N}'’#@][ ]?|[\r\n]+|\s+"
 
 # Original word-level regex (V1–V14)
 # pattern = r"\r\n|\n|\w+(?:['’]\w+)?|[^\w\s]"

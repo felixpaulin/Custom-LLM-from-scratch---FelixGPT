@@ -13,13 +13,14 @@ device = torch_directml.device()
 print("Using device:", device)
 
 temperature = 0.8
-embedding_dim = 72
+# embedding_dim is 72 for models before V2.33
+embedding_dim = 96
 hidden_dim = 136
 hidden_dim2 = 192
 hidden_dim3 = 224
 batch_size = 32
 
-version = "V2.31"
+version = "V2.35"
 
 def estimate_loss(model):
     model.eval()
@@ -91,6 +92,7 @@ training_losses = []
 best_val_loss = float("inf")
 
 print(f"Training FelixGPT Ngram model {version}!")
+print(f"Number of parameters: {param_count}")
 
 for iterations in range(150000):
     optimizer.zero_grad()
@@ -120,7 +122,6 @@ for iterations in range(150000):
 
 print(f"{version} training finished!")
 print(f"Best validation loss: {best_val_loss}")
-print(f"Number of parameters: {param_count}")
 """
 def predict(input_ids):
     model.eval()

@@ -3,7 +3,7 @@ Project Progress Log (this file is massive, 785+ lines haha, but I also have 30+
 
 ## Project Overview
 
-FelixGPT is an experimental (currently) word-level N-gram language model trained on the Tiny Shakespeare dataset.
+FelixGPT is a (currently) word-level N-gram language model trained on the Tiny Shakespeare dataset.
 
 The objective is to develop a model capable of generating increasingly coherent, grammatically correct and Shakespeare-inspired text.
 
@@ -733,7 +733,149 @@ Replace GELU with SiLU while keeping everything else unchanged to investigate wh
 - Final training loss: 5.16676.
 - Final validation loss: 4.848
 ---
+## V2.32 — Context Length 7 and Reduced Dropout
 
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram with output projection
+- Embedding dimension: 72
+- Hidden dimensions: 136 → 192 → 224
+- Context length: 7
+- Activation: SiLU
+- Dropout: 0.27
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Training iterations: 150,000
+- Parameters: 2,322,624
+
+**Hypothesis:**
+
+Increase the context length from 6 to 7 while reducing dropout from 0.35 to 0.27. The additional context could help the model recognise longer token relationships, while reduced dropout could allow it to learn more effectively from the training data.
+
+**Observations:**
+- Best validation loss: 4.832463 at iteration 109,000.
+- Final training loss: 5.048169.
+- Final validation loss: 4.909350.
+- Training loss improved compared with V2.31.
+- Validation performance did not surpass V2.31.
+- The model generated recognisable Shakespearean dialogue and some convincing longer constructions.
+- Hall of Fame: "I am not to his mother!"
+
+**Conclusion:**
+
+V2.32 achieved a lower final training loss than V2.31 but did not improve validation performance. The experiment changed both context length and dropout simultaneously, so their individual effects cannot be determined. V2.31 remained the champion.
+
+---
+
+## V2.33 — Increased Embedding Dimension
+
+**Configuration:**
+- Architecture: Three-hidden-layer, weight-tied N-gram with output projection
+- Embedding dimension: 96
+- Hidden dimensions: 136 → 192 → 224
+- Context length: 6
+- Activation: SiLU
+- Dropout: 0.35
+- Batch size: 32
+- Learning rate: 0.0007
+- Optimizer: AdamW
+- Weight decay: 0.01
+- Training iterations: 150,000
+- Parameters: 3,060,552
+
+**Hypothesis:**
+
+Increase the embedding dimension from 72 to 96 while keeping the remaining architecture and training configuration unchanged. Larger embeddings could provide more representational capacity and allow the model to capture more nuanced relationships between tokens.
+
+**Observations:**
+- Best validation loss: 4.819457 at iteration 140,000.
+- Final training loss: 5.103780.
+- Final validation loss: 4.910703.
+- Approximately 32% more parameters than V2.31.
+- Came relatively close to V2.31 but did not establish a new validation-loss record.
+- Generated text contained convincing Shakespearean expressions and several coherent dialogue fragments.
+- Hall of Fame: "Why, he's a man, 'tis true. But now he hath battle with me."
+
+**Conclusion:**
+
+Increasing the embedding dimension improved the model's representational capacity but did not produce better validation performance. The additional parameters did not translate into a corresponding improvement in generalisation. V2.31 remained the champion.
+
+---
+
+## V2.34 — GPT-4-Style Regex Tokenizer
+
+**Configuration:**
+- Architecture: V2.31-derived N-gram architecture
+- Context length: 6
+- Tokenizer: GPT-4-style regex pre-tokenisation
+- Vocabulary size: 15,026
+- Total tokens: 272,209
+- Newline tokens: 6,682
+- Parameters: 3,054,600
+- Training iterations: 150,000
+
+**Hypothesis:**
+
+Replace the existing GPT-2-style pre-tokenisation pattern with a GPT-4-style regex pattern while retaining the existing model and training approach. Investigate whether alternative token boundaries improve language modelling and generated text quality.
+
+**Observations:**
+- Best validation loss: 5.397990 at iteration 133,000.
+- Final validation loss: 5.456444.
+- Training loss continued decreasing throughout much of training.
+- The new tokenizer produced approximately 8.6% fewer tokens than the original tokenizer.
+- Generated text contained recognisable Shakespearean dialogue and several convincing phrases.
+- Some longer constructions appeared promising despite grammatical inconsistencies.
+- Validation loss is not directly comparable with models using the previous tokenizer.
+- Hall of Fame: "I'll be very brief."
+
+**Conclusion:**
+
+The GPT-4-style regex tokenizer changed the dataset's token boundaries and reduced the total number of tokens. Although the model generated some promising passages, its training results did not establish a clear improvement. The experiment demonstrated that adopting a tokenizer pattern from a more advanced model does not automatically benefit a smaller N-gram architecture.
+
+---
+
+## V2.35 — Custom Whitespace-Aware Tokenizer
+
+**Configuration:**
+- Architecture: N-gram with weight tying and output projection
+- Context length: 6
+- Tokenizer: Custom whitespace-aware, punctuation-separated regex
+- Vocabulary size: 18,102
+- Total tokens: 296,198
+- Newline tokens: 25,554
+- Parameters: 3,645,192
+- Training iterations: 150,000
+
+**Tokenizer design:**
+- Words include optional trailing spaces.
+- Punctuation is separated into individual tokens, with optional following spaces.
+- Apostrophes are represented as separate tokens.
+- Special markers such as `#` and `@` are handled separately.
+- Numbers are divided into chunks of up to three digits.
+- Newlines are preserved.
+
+**Hypothesis:**
+
+Develop a custom tokenizer that preserves whitespace more consistently and separates punctuation from words. Since spaces and punctuation carry useful grammatical information, representing them explicitly could help the model learn more consistent sentence structures and word relationships.
+
+**Observations:**
+- Best validation loss: 4.994070 at iteration 87,000.
+- Final training loss: 4.945535.
+- Final validation loss: 5.109487.
+- Vocabulary increased to 18,102 tokens.
+- Total token count returned to approximately the original dataset size.
+- Validation loss began deteriorating during later training while training loss continued improving, suggesting overfitting.
+- Generated text showed promising Shakespearean dialogue, vocabulary and longer sentence constructions.
+- Some generated passages appeared more coherent, although unusual word combinations and token-boundary artefacts remained.
+- Validation loss is not directly comparable with models using previous tokenizers.
+- Hall of Fame: "We have said he cannot go with you."
+
+**Conclusion:**
+
+The custom tokenizer produced a substantially different vocabulary and token distribution. Despite overfitting during later training, V2.35 generated several promising passages and demonstrated that tokenizer design deserves further investigation. The experiment did not establish a new champion, but its generation quality makes it a promising candidate for further refinement.
+
+---
 ## Generation Experiments
 
 Generation tests use consistent settings:
@@ -780,7 +922,10 @@ A collection of particularly memorable generated phrases:
 - "The hours of his of his friend."
 - "It's my agony."
 - "No, my lord."
-- "Alack, and so, convey you: my gracious lord."
+- "I am not to his mother!"
+- "Why, he's a man, 'tis true. But now he hath battle with me."
+- "I'll be very brief."
+- "We have said he cannot go with you."
 ---
 
 *FelixGPT — Teaching a computer to speak Shakespeare, one questionable sentence at a time.*
